@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Page Title</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <script src="https://unpkg.com/vue@next"></script>
+  
+</head>
+<body>
+    <h1>test vue portal</h1>
+     <div id="app-2">
+        <div>in vue - {{message}}</div>
+        <teleport  to="#outer">
+         in portal -   {{message}}
+          </teleport >
+      </div>
+<h2>Before portal element</h2>
+ <div id="outer"></div>
+   <script src='main.js'></script>
+</body>
+</html>

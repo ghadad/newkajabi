@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Two-Factor Authentication</title>
+  </head>
+  <body>
+    <form action="/api/verify" method="post">
+      <label>User:</label>
+      <input type="text" name="userId" required>
+      <label>Password:</label>
+      <input type="password" name="password" required>
+      <br>
+      <label>Google Authenticator Code:</label>
+      <input type="text" name="token" required>
+      <br>
+      <input type="hidden" name="secret" value="your-2fa-secret">
+      <input type="submit" value="Submit">
+      <img data-src="/api/qrcode"></img>
+    </form>
+  </body>
+</html>
