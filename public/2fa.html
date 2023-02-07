@@ -4,9 +4,10 @@
     <title>Two-Factor Authentication</title>
   </head>
   <body>
+	  <h2>verify</h2>
     <form action="/api/verify" method="post">
-      <label>User:</label>
-      <input type="text" name="userId" required>
+      <label>Email:</label>
+      <input type="text" name="email" required>
       <label>Password:</label>
       <input type="password" name="password" required>
       <br>
@@ -14,8 +15,13 @@
       <input type="text" name="token" required>
       <br>
       <input type="hidden" name="secret" value="your-2fa-secret">
-      <input type="submit" value="Submit">
-      <img data-src="/api/qrcode"></img>
+      <input type="submit" value="Verify">
+    </form>
+	  <h2>register</h2>
+    <form action="/api/register" method="post">
+      <label>Email:</label>
+      <input type="text" name="email" required>
+      <input type="submit" value="Register">
     </form>
   </body>
 </html>

@@ -1,23 +1,28 @@
-const sqlite3 = require('sqlite3');
+const sqlite3 = require('knex');
 
-const db = new sqlite3.Database('secrets.db', (err) => {
-  if (err) {
-    return console.error(err.message);
-  }
-  console.log('Connected to the file-based SQLite database.');
-
-	 
-  db.run(`CREATE TABLE IF EXISTS users (
-    userId TEXT PRIMARY KEY,
-    secret TEXT NOT NULL,
-    qrcode text not null
-  )`, (err) => {
-    if (err) {
-      return console.error(err.message);
-    }
-    console.log('Users table created successfully.');
-  });
+const knex = require('knex')({
+  client: 'sqlite3',
+  connection: {
+    filename: './data.db',
+  },
+  useNullAsDefault: true
 });
 
-module.exports = db; 
+
+async function initDb() { 
+  try {
+  await knex.schema
+    .createTable('accounts', table => {
+      table.increments();
+	    table.string('email');
+      table.string('secret');
+	    table.string('qrcode');
+    });
+} catch(e) {
+  console.error(e);
+};
+ return knex ;
+}
+
+module.exports = initDb ;
 

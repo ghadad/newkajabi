@@ -2,25 +2,21 @@
 const QRCode = require('qrcode');
 const speakeasy = require('speakeasy');
 
-function register(req,res) {
+async function register(req,res) {
   const secret = speakeasy.generateSecret({ length: 20 });
+  if(!req.body.email) 
+     return  res.send('Missing email in query url');
 
-  req.app.locals.db.run(`INSERT INTO users (userId, secret) VALUES (?,?)`, [req.query.userId, secret.base32], function (err) {
-    if (err) {
-        return console.log(err.message);
-    }
-    console.log(`A row has been inserted with rowid ${this.lastID}`);
-  });
+  await req.app.locals.db('accounts').insert({email:req.body.email,secret:secret.base32 , qrcode:secret.otpauth_url}); 
+  console.log(`A row has been inserted with rowid`);
 }
 
 
- function verify(req, res) {
-	  console.log(req.body);
-  const sql = `SELECT secret FROM users WHERE userId = ?`;
-  req.app.locals.db.get(sql, [req.body.userId], (err, row) => {
-    if (err) {
-      return console.error(err.message);
-    }
+async function verify(req, res) {
+  if(!req.body.email) 
+     return  res.send('Missing email in query url');
+
+   let row  = await req.app.locals.db('accounts').select('*').where('email','=',req.body.email).first();
     if (!row) {
       return res.status(401).send('User not found');
     }
@@ -36,16 +32,20 @@ function register(req,res) {
     } else {
       res.status(401).send('Invalid 2FA code');
     }
-  });
 };
 
 
 async function qrcode(req,res) { 
-  const secret = speakeasy.generateSecret({ length: 20 });
-	console.log(QRCode.toDataURL(secret.otpauth_url));
-        QRCode.toDataURL(secret.otpauth_url,function(err,dataUrl) {
+   if(!req.query.email) 
+           return  res.send('Missing email in query url');
+
+   let row  = await req.app.locals.db('accounts').select('*').where('email','=',req.query.email || req.body.email).first();
+    if (!row) {
+      return res.status(401).send('User not found');
+    }
+        QRCode.toDataURL(row.qrcode,function(err,dataUrl) {
             res.send('<img src='+ dataUrl +'>');
-	});
+    });
 }
 
 module.exports = { 
