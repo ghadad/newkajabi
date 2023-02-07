@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Include Vue from a CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
+ <script>
+    Vue.component('token-component', {
+        props:["email"],
+        template: `<div class=\"box\">  email: {{$props}}   <div class="form-group">
+      <label
+        
+        for="member_email"
+        kjb-settings-id="sections_login_settings_email"
+        >Enter autenticaor code </label
+      >
+      <input
+        class="form-control auth__field"
+        spellcheck="false"
+        autocorrect="off"
+        type="number"
+        ref="token"
+        id="member_token"
+        value=""
+      />
+    </div> </div>`
+  });
+  
+  Vue.component('qr-component', {
+    props:["qrImage"],
+    template: `<div class=\"box\"> qr :<div v-html="$props.qrImage"></div></div>`
+  });
+    
+ </script>
+    <title>Document</title>
+</head>
+<body>
+    <div id="twofa">
+    <form
+    novalidate="novalidate"
+    class="new_member_session"
+    id="new_member_session"
+    action="/login"
+    accept-charset="UTF-8"
+    method="post"
+  >
+    <div style="display: none">
+      <input name="utf8" type="hidden" value="✓" /><input
+        name="authenticity_token"
+        type="hidden"
+        value="nEvly6bCmyC/M+mzfqv9B0sDySrGyjWUSxl9qG3AElsyzpz+410UJtboOSghaTfL7yCbD/f6XFTRZq+tG9V14w=="
+      />
+    </div>
+  
+    <div class="form-group">
+      <label
+        class="auth__label"
+        for="member_email"
+        kjb-settings-id="sections_login_settings_email"
+        >Email</label
+      >
+      <input
+        class="form-control auth__field"
+        spellcheck="false"
+        autocorrect="off"
+        autofocus="autofocus"
+        type="text"
+        v-model="formData.email"
+        name="member[email]"
+        id="member_email"
+        value=""
+      />
+    </div>
+    <div class="form-group">
+      <label
+        class="auth__label"
+        for="member_password"
+        kjb-settings-id="sections_login_settings_password"
+        >Password</label
+      >
+      <input
+        class="form-control auth__field"
+        type="password"
+        ref="member_password"
+        name="member[password]"
+        id="member_password"
+      />
+    </div>
+    <div class="form-group">
+      <label kjb-settings-id="sections_login_settings_remember_me">
+        <input
+          class="boolean optional"
+          type="checkbox"
+          value="1"
+          name="member[remember_me]"
+          id="member_remember_me"
+        />
+        <span class="auth__label">זכור אותי</span>
+      </label>
+    </div>
+    <div id="2fa-token"> <token-component :email="email"></token-component></div>
+    <div id="2fa-register"> <qr-component  :qr-image="qrCode"></qr-component></div>
+    <button
+      v-show="verified"
+      id="form-button"
+      ref="member_submit"
+      class="form-btn btn--outline btn--auto btn--large"
+      type="submit"
+      kjb-settings-id="sections_login_settings_btn_text"
+    >
+      Submit
+    </button>
+  </form>
+</div>
+<script src="vue2fa.js"></script>
+</body>
+</html>
