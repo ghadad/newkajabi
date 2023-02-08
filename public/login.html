@@ -7,32 +7,7 @@
     <!-- Include Vue from a CDN -->
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
  <script>
-    Vue.component('token-component', {
-        props:["email"],
-        template: `<div class=\"box\">  email: {{$props}}   <div class="form-group">
-      <label
-        
-        for="member_email"
-        kjb-settings-id="sections_login_settings_email"
-        >Enter autenticaor code </label
-      >
-      <input
-        class="form-control auth__field"
-        spellcheck="false"
-        autocorrect="off"
-        type="number"
-        ref="token"
-        id="member_token"
-        value=""
-      />
-    </div> </div>`
-  });
   
-  Vue.component('qr-component', {
-    props:["qrImage"],
-    template: `<div class=\"box\"> qr :<div v-html="$props.qrImage"></div></div>`
-  });
-    
  </script>
     <title>Document</title>
 </head>
@@ -82,6 +57,7 @@
       >
       <input
         class="form-control auth__field"
+        v-model="formData.password"
         type="password"
         ref="member_password"
         name="member[password]"
@@ -100,10 +76,16 @@
         <span class="auth__label">זכור אותי</span>
       </label>
     </div>
-    <div id="2fa-token"> <token-component :email="email"></token-component></div>
-    <div id="2fa-register"> <qr-component  :qr-image="qrCode"></qr-component></div>
+    <div id="2fa-token" v-if="twofa"> <token-component ref="tokenComponent" :email="email"></token-component></div>
+    <div id="2fa-register" v-if="twofa"> <qr-component  :qr-image="qrCode"></qr-component></div>
     <button
-      v-show="verified"
+    class="form-btn btn--outline btn--auto btn--large"
+    @click="verify($event)"
+    >
+    Verify
+    </button>
+    <button
+      v-if="!(twofa && verified)"
       id="form-button"
       ref="member_submit"
       class="form-btn btn--outline btn--auto btn--large"
