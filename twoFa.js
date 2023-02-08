@@ -13,12 +13,13 @@ async function register(req,res) {
 
 
 async function verify(req, res) {
+	console.log(req.body);
   if(!req.body.email) 
-     return  res.send('Missing email in query url');
+     return  res.json({success:false,message:'Missing email in body url'});
 
    let row  = await req.app.locals.db('accounts').select('*').where('email','=',req.body.email).first();
     if (!row) {
-      return res.status(401).send('User not found');
+      return res.status(401).json({success:false,message:'Email not found'});
     }
 
     const verified = speakeasy.totp.verify({
@@ -28,9 +29,9 @@ async function verify(req, res) {
     });
 
     if (verified) {
-      res.send('Valid 2FA code');
+      return res.json({'success':true});
     } else {
-      res.status(401).send('Invalid 2FA code');
+      return res.status(401).json({'success':false,message:'Cannot verify the token , please try again'});
     }
 };
 
