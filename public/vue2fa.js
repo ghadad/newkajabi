@@ -60,7 +60,9 @@ new Vue({
     mounted() {
         var self = this;
         self.mounted = true;
-        self.twofa = true;
+        console.log("window.location.href:",window.location.href)
+        if(window.location.href.match(/\?twofa=true/))
+            self.twofa = true;
     },
     methods: {
         async verify(e) {
