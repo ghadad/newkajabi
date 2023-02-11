@@ -1,6 +1,7 @@
-Vue.component('token-component', {
-    props: ["email"],
-    data() {
+document.addEventListener("DOMContentLoaded", function () {
+    Vue.component('token-component', {
+      props: ["email"],
+      data() {
         return {
             token: null,
         };
@@ -140,5 +141,6 @@ new Vue({
         }
     }
 });
-
-
+ 
+});
+  
