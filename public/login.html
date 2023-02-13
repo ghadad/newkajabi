@@ -15,6 +15,7 @@
 <body>
     <div id="twofa">
     <form
+    ref="login_form"
     novalidate="novalidate"
     class="new_member_session"
     id="new_member_session"
@@ -79,13 +80,12 @@
     </div>
     <div id="2fa-token" v-if="twofa"> <token-component ref="tokenComponent" :email="email"></token-component></div>
     <div id="2fa-register" v-if="twofa"> <qr-component  :qr-image="qrCode"></qr-component></div>
+    <div id="2fa-error" v-if="twofa"> {{ error }}</div>
     <button v-if="twofa"
     class="form-btn btn--outline btn--auto btn--large"
     @click="verify($event)"
     >
     Pre-Submit
-
-    
     </button>
     <button
       v-if="!(twofa && verified)"

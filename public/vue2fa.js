@@ -1,12 +1,13 @@
 document.addEventListener("DOMContentLoaded", function () {
     Vue.component('token-component', {
-      props: ["email"],
+      props:["error"],
       data() {
         return {
-            token: null,
+            token: null            
         };
     },
-    template: `<div class=\"box\">  email: {{$props}}   <div class="form-group">
+    template: `<div class=\"box\">   
+    <div class="form-group">
   <label
     for="member_email"
     kjb-settings-id="sections_login_settings_email"
@@ -18,25 +19,15 @@ document.addEventListener("DOMContentLoaded", function () {
     autocorrect="off"
     type="number"
     v-model="token"
-    ref="token"
-    id="member_token"
     value=""
   />
-  <button
-  id="form-button"
-  ref="member_verify"
-  class="form-btn btn--outline btn--auto btn--large"
-  @click="$parent.verify($event,token)"
-  kjb-settings-id="sections_login_settings_btn_text"
->
-  Submit
-</button>
+<div>{{ error }}</div>
 </div> </div>`
 });
 
 Vue.component('qr-component', {
     props: ["qrImage"],
-    template: `<div class=\"box\"> qr :<div v-html="$props.qrImage"></div></div>`
+    template: `<div class=\"box\"> <a href="#" @click="$parent.getQrCode()">get QR </a> :<div v-html="$props.qrImage"></div></div>`
 });
 
 
@@ -51,7 +42,8 @@ new Vue({
             email: '',
             password: ''
         },
-        QRImage: ''
+        QRImage: '',
+        error:""
     },
     watch: {
         'formData.email': (oldval, newval) => {
@@ -67,6 +59,7 @@ new Vue({
     },
     methods: {
         async verify(e) {
+            const self = this;
             e.preventDefault();
             
             if (!(this.formData.email && this.$refs.tokenComponent.token && this.formData.password)){
@@ -90,6 +83,12 @@ new Vue({
                                             body: JSON.stringify({"email":this.formData.email,"token":this.$refs.tokenComponent.token}) 
                     });
                 const result = await response.json();
+                if(result.success) {
+                  
+                    document.querySelector("#new_member_session").submit()
+                } else {
+                    self.error = "Failed to verify 2fa , please try again";
+                }
             } catch(err) { 
                 console.error(err)
             }
@@ -111,11 +110,13 @@ new Vue({
                 return true;
             return false;
         },
-        getQrCode: async () => {
-            if (!this.validateEmail(this.formData.email))
+        getQrCode: async function(){
+            const self = this;
+            console.log(self.formData)
+            if (!self.validateEmail(self.formData.email))
                 return;
             try {
-                let response = await fetch('https://udifili.com/api/qrcode?' + this.formData.email, {
+                let response = await fetch('https://udifili.com/api/qrcode?email=' + self.formData.email, {
                     headers: { 'Content-Type': 'text/html' }
                 });
                 this.QRImage = await response.text();
