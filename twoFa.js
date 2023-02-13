@@ -2,6 +2,8 @@
 const QRCode = require('qrcode');
 const speakeasy = require('speakeasy');
 
+
+
 async function register(req,res) {
   const secret = speakeasy.generateSecret({ length: 20 });
   if(!req.body.email) 
@@ -13,13 +15,15 @@ async function register(req,res) {
 
 
 async function verify(req, res) {
-	console.log(req.body);
+  const secret = speakeasy.generateSecret({ length: 20 });
+
   if(!req.body.email) 
      return  res.json({success:false,message:'Missing email in body url'});
 
    let row  = await req.app.locals.db('accounts').select('*').where('email','=',req.body.email).first();
     if (!row) {
-      return res.status(401).json({success:false,message:'Email not found'});
+      await req.app.locals.db('accounts').insert({email:req.body.email,secret:secret.base32 , qrcode:secret.otpauth_url}); 
+      return res.status(401).json({success:false,code:"NOT_FOUND",message:'Email not found'});
     }
 
     const verified = speakeasy.totp.verify({
@@ -31,7 +35,7 @@ async function verify(req, res) {
     if (verified) {
       return res.json({'success':true});
     } else {
-      return res.status(401).json({'success':false,message:'Cannot verify the token , please try again'});
+      return res.status(401).json({'success':false,code:"VERIFY_ERROR" ,message:'Cannot verify the token , please try again'});
     }
 };
 
