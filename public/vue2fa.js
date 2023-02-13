@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
     Vue.component("token-component", {
       data() {
         return {
-            error:"",
+          error:"",
           token: null,
           qrImage: "",
         };
@@ -83,7 +83,9 @@ document.addEventListener("DOMContentLoaded", function () {
             value=""
         />
     </label>
-        <div class=\"box\"> <a href="#" @click="getQrCode()">get QR </a> :<div v-html="qrImage"></div></div>
+        <div class=\"box\"> <a href="#" @click="getQrCode()">get QR </a> :<div v-html="qrImage"></div>
+    </div>
+    <div v-show="error" class="form-group">{{ error }} </div>
     <button 
     class="form-btn btn--outline btn--auto btn--large"
     @click="verify($event)"
