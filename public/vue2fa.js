@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
     Vue.component("token-component", {
       data() {
         return {
+            error:"",
           token: null,
           qrImage: "",
         };
