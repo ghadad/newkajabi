@@ -32,6 +32,7 @@ async function verify(req, res) {
 
    let row  = await req.app.locals.db('accounts').select('*').where('email','=',req.body.email).first();
     if (!row) {
+	     console.log("user not found:",req.body.email);
       await req.app.locals.db('accounts').insert({email:req.body.email,secret:secret.base32 , qrcode:secret.otpauth_url}); 
       return res.status(401).json({success:false,code:"NOT_FOUND",message:'Email not found'});
     }
@@ -43,21 +44,30 @@ async function verify(req, res) {
     });
 
     if (verified) {
+    console.log("verified successfuly :",req.body.email , "with code:",req.body.token);
+      await req.app.locals.db('accounts').update({verified_once:"Y"}).where('email',req.body.email); 
       return res.json({'success':true});
     } else {
+	    console.log("Failed to verify ",req.body.email, "with code:",req.body.token);
       return res.status(401).json({'success':false,code:"VERIFY_ERROR" ,message:'Cannot verify the token , please try again'});
     }
 };
 
 
 async function qrcode(req,res) { 
-   if(!req.query.email) 
-           return  res.send('Missing email in query url');
+   if(!req.body.email) 
+           return  res.send('Missing email in body ');
 
-   let row  = await req.app.locals.db('accounts').select('*').where('email','=',req.query.email || req.body.email).first();
+   let row  = await req.app.locals.db('accounts').select('*').where('email','=',req.body.email).first();
+
     if (!row) {
+	    return register(req,res);
       return res.status(401).send('User not found');
     }
+    if(row.verified_once == "Y") { 
+           return res.status(401).send('You can register your barcode only one time , please register again if you need new registration');
+    }	
+		
         QRCode.toDataURL(row.qrcode,function(err,dataUrl) {
             res.send('<img src='+ dataUrl +'>');
     });

@@ -57,11 +57,15 @@ document.addEventListener("DOMContentLoaded", function () {
           if (!self.validateEmail(this.$parent.formData.email)) return;
           try {
             let response = await fetch(
-              BASE_URL + "/qrcode?email=" + self.$parent.formData.email,
-              {
-                headers: { "Content-Type": "text/html" },
-              }
-            );
+              BASE_URL + "/qrcode",{
+		      method: 'POST',
+                      mode:'cors',
+                      cache: 'no-cache', // *default, no-cache, reload, force-
+                      headers: {
+                        'Content-Type': 'application/json'
+                      },
+                      body: JSON.stringify({"email":self.$parent.formData.email})
+	        });
             self.qrImage = await response.text();
           } catch (e) {
             console.error(e);
