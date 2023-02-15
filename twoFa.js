@@ -5,17 +5,27 @@ const speakeasy = require('speakeasy');
 
 
 async function register(req,res) {
-  const secret = speakeasy.generateSecret({ length: 20 });
+  const secret = speakeasy.generateSecret({ length: 20 ,name:'Difuzia 2FA' });
   if(!req.body.email) 
      return  res.send('Missing email in query url');
+	 let row ;
+    //  row  = await req.app.locals.db.raw('delete from accounts');
+	console.log(await req.app.locals.db('accounts').select('*').where('email','=',req.query.email || req.body.email));
+     row  = await req.app.locals.db('accounts').select('*').where('email','=',req.query.email || req.body.email).first();
+    let result ; 
+    if (row) {
+       result = await req.app.locals.db('accounts').update({secret:secret.base32 , qrcode:secret.otpauth_url}).where('email',req.body.email);
+    } else { 
+       result  = await req.app.locals.db('accounts').insert({email:req.body.email,secret:secret.base32 , qrcode:secret.otpauth_url}); 
+    }
+	return res.json({result:result});
 
-  await req.app.locals.db('accounts').insert({email:req.body.email,secret:secret.base32 , qrcode:secret.otpauth_url}); 
-  console.log(`A row has been inserted with rowid`);
+    
 }
 
 
 async function verify(req, res) {
-  const secret = speakeasy.generateSecret({ length: 20 });
+  const secret = speakeasy.generateSecret({ length: 20 ,name:'Difuzia 2FA'});
 
   if(!req.body.email) 
      return  res.json({success:false,message:'Missing email in body url'});

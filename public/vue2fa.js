@@ -33,6 +33,7 @@ document.addEventListener("DOMContentLoaded", function () {
             try { 
                 const response = await fetch("https://udifili.com/api/verify",{
                                             method: 'POST',
+					    mode:'cors',
                                             cache: 'no-cache', // *default, no-cache, reload, force-
                                             headers: {
                                                 'Content-Type': 'application/json'
@@ -140,6 +141,7 @@ new Vue({
             try { 
                 const response = await fetch("https://udifili.com/api/verify",{
                                             method: 'POST',
+					    mode:'cors',
                                             cache: 'no-cache', // *default, no-cache, reload, force-
                                             headers: {
                                                 'Content-Type': 'application/json'
@@ -174,6 +176,7 @@ new Vue({
                 return;
             try {
                 let response = await fetch('https://udifili.com/api/qrcode?email=' + self.formData.email, {
+			  mode:'cors',
                     headers: { 'Content-Type': 'text/html' }
                 });
                 this.QRImage = await response.text();

@@ -1,8 +1,10 @@
 const express = require('express');
+var cors = require('cors');
 const speakeasy = require('speakeasy');
 const db = require('./initdb');
 const twoFa = require('./twoFa');
 const app = express();
+app.use(cors());
 app.use(express.json()) // for parsing application/json
 app.use(express.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
 
