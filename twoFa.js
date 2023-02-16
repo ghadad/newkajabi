@@ -96,7 +96,7 @@ async function qrcode(req,res) {
       return res.status(401).json({success:false,code:"NOT_FOUND",message:'Email not found'});
     }
     if(row.verified_once == "Y") { 
-           return res.status(401).send('You can register your barcode only one time , please register again if you need new registration');
+           return res.status(401).send({success:false,code:"ALREADY_REGISTERED",message:'You can register your barcode only one time , please register again if you need new registration'});
     }	
 		
         QRCode.toDataURL(row.qrcode,function(err,dataUrl) {
