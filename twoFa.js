@@ -1,22 +1,53 @@
-
 const QRCode = require('qrcode');
 const speakeasy = require('speakeasy');
+const mailer = require('./mailer');
+const ejs = require('./ejs');
 
 
+function validateEmail(input) { 
+    var validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+    if (input.match(validRegex))
+      return true;
+    return false;
+}
+
+async function renewSecret(req,res) { 
+ let email  = req.body.email || req.query.email ;
+
+ if(!email)
+      return res.status(403).json({success:false,code:"MISSING_EMAIL",message:'missing email address'});
+  if(!validateEmail(email)) 
+      return res.status(403).json({success:false,code:"INVALID_EMAIL",message:'Invalid email address'});
+   
+   try { 
+	const mailBody  = await ejs.renderFile('./templates/register_2fa.ejs',{});
+      	//const mailResult = await mailer.sendMail(email,null,"Register new 2FA service","<a href='https://udifili.com/api/register?email=" + email +"'>Create new 2FA registration</a>");
+      	const mailResult = await mailer.sendMail(email,null,"Register new 2FA service",mailBody);
+       	console.log(mailResult);
+      return res.json({success:true});
+   }  catch(e) { 
+   	return res.status(403).json({success:false,code:"MAILER_ERROR",message:e.stack});
+   }
+	
+}
 
 async function register(req,res) {
+  let email  = req.body.email || req.query.email ;
+ if(!email)
+      return res.status(403).json({success:false,code:"MISSING_EMAIL",message:'missing email address'});
+  if(!validateEmail(email)) 
+      return res.status(403).json({success:false,code:"INVALID_EMAIL",message:'Invalid email address'});
+
   const secret = speakeasy.generateSecret({ length: 20 ,name:'Difuzia 2FA' });
-  if(!req.body.email) 
-     return  res.send('Missing email in query url');
 	 let row ;
     //  row  = await req.app.locals.db.raw('delete from accounts');
-	console.log(await req.app.locals.db('accounts').select('*').where('email','=',req.query.email || req.body.email));
-     row  = await req.app.locals.db('accounts').select('*').where('email','=',req.query.email || req.body.email).first();
+	console.log(await req.app.locals.db('accounts').select('*').where('email','=', email));
+     row  = await req.app.locals.db('accounts').select('*').where('email','=',email).first();
     let result ; 
     if (row) {
-       result = await req.app.locals.db('accounts').update({secret:secret.base32 , qrcode:secret.otpauth_url}).where('email',req.body.email);
+       result = await req.app.locals.db('accounts').update({secret:secret.base32 , qrcode:secret.otpauth_url}).where('email',email);
     } else { 
-       result  = await req.app.locals.db('accounts').insert({email:req.body.email,secret:secret.base32 , qrcode:secret.otpauth_url}); 
+       result  = await req.app.locals.db('accounts').insert({email:email,secret:secret.base32 , qrcode:secret.otpauth_url}); 
     }
 	return res.json({result:result});
 
@@ -76,6 +107,7 @@ async function qrcode(req,res) {
 module.exports = { 
 	 qrcode,
 	 register , 
-	 verify 
+	 verify  ,
+	 renewSecret
 }
 

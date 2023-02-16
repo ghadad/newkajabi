@@ -2,6 +2,7 @@ const express = require('express');
 var cors = require('cors');
 const speakeasy = require('speakeasy');
 const db = require('./initdb');
+const mailer = require('./mailer');
 const twoFa = require('./twoFa');
 const app = express();
 app.use(cors());
@@ -23,6 +24,8 @@ const basePath  = "/api";
 app.post(basePath+'/verify',twoFa.verify);
 app.post(basePath+'/register',twoFa.register);
 app.post(basePath+'/qrcode',twoFa.qrcode);
+app.post(basePath+'/renew-secret',twoFa.renewSecret);
+app.get(basePath+'/renew-secret',twoFa.renewSecret);
 
 const port = process.env.PORT || 3000;
 app.listen(port, '0.0.0.0',function () {
