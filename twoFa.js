@@ -87,20 +87,20 @@ async function verify(req, res) {
 
 async function qrcode(req,res) { 
    if(!req.body.email) 
-           return  res.send('Missing email in body ');
+       return res.status(403).json({success:false,code:"MISSING_EMAIL",message:'missing email address'});
 
-   let row  = await req.app.locals.db('accounts').select('*').where('email','=',req.body.email).first();
+     let row  = await req.app.locals.db('accounts').select('*').where('email','=',req.body.email).first();
 
     if (!row) {
 	    return register(req,res);
-      return res.status(401).send('User not found');
+      return res.status(401).json({success:false,code:"NOT_FOUND",message:'Email not found'});
     }
     if(row.verified_once == "Y") { 
            return res.status(401).send('You can register your barcode only one time , please register again if you need new registration');
     }	
 		
         QRCode.toDataURL(row.qrcode,function(err,dataUrl) {
-            res.send('<img src='+ dataUrl +'>');
+            res.json({success:true,qr:'<img src='+ dataUrl +'>'});
     });
 }
 

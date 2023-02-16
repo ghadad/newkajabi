@@ -79,9 +79,8 @@
       </label>
     </div>
     <div id="2fa-token" v-if="twofa"> <token-component ref="tokenComponent" ></token-component></div>
-   
     <button
-      v-if="!(twofa && verified)"
+      v-if="!(twofa )"
       id="form-button"
       ref="member_submit"
       class="form-btn btn--outline btn--auto btn--large"

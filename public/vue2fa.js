@@ -1,14 +1,36 @@
 document.addEventListener("DOMContentLoaded", function () {
     const BASE_URL  = "https://udifili.com/api";
 
+    const request = async function(path,body,type="json"){
+        const response = await fetch("https://udifili.com/api/"+path,{
+            method: 'POST',
+            mode:'cors',
+            cache: 'no-cache', // *default, no-cache, reload, force-
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body) 
+        });
+        if(type=="json")
+             return  await response.json();
+        return await response.text();
+    }
+
     Vue.component("token-component", {
       data() {
         return {
           error:"",
+          message:"",
           token: null,
           qrImage: "",
         };
       },
+      watch: {
+        token(oldval, newval) {
+            this.error ="";
+        },
+        
+    },
       methods: {
         validateEmail: function (input) {
           var validRegex =
@@ -23,50 +45,56 @@ document.addEventListener("DOMContentLoaded", function () {
             let token = this.token;
             e.preventDefault();
             if (!(email && token && password)){
-                alert("missing token or email or password");
+                this.error ="חסרים פרטי כניסה";
                 return ;
             }
             if(!this.validateEmail(email))    {
-                alert("please insert valid email");
+                this.error ='כתובת דוא"ל אינה תקינה';
                 return ;
             }
             try { 
-                const response = await fetch("https://udifili.com/api/verify",{
-                                            method: 'POST',
-					    mode:'cors',
-                                            cache: 'no-cache', // *default, no-cache, reload, force-
-                                            headers: {
-                                                'Content-Type': 'application/json'
-                                            },
-                                            body: JSON.stringify({"email":email,"token":token}) 
-                    });
-                const result = await response.json();
+                const result = await request("verify",{"email":email,"token":token});
                 if(result.success) {
                   
                     document.querySelector("#new_member_session").submit()
                 } else {
-                    self.error = "Failed to verify 2fa , please try again";
+                    self.error = "אימות דו שלבי נכשל אנא נסו שוב ";
                 }
             } catch(err) { 
                 console.error(err)
             }
     return false
      },
+     register: async function () {
+        const self = this;
+        self.qrImage ="";
+        const email = self.$parent.formData.email; 
+        if (!self.validateEmail(email))  {
+          this.error =' כתובת דוא"ל חסרה או שאינה  תקינה ';
+          return ;
+        };
+        try {
+          const result = await request("register",{"email":email});
+          if(result.success) { 
+
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      },
+    
         getQrCode: async function () {
+         
           const self = this;
-          if (!self.validateEmail(this.$parent.formData.email)) return;
+          self.qrImage ="";
+          const email  = self.$parent.formData.email;
+          if (!self.validateEmail(email))  {
+            this.error =' כתובת דוא"ל חסרה או שאינה  תקינה ';
+            return ;
+          };
           try {
-            let response = await fetch(
-              BASE_URL + "/qrcode",{
-		      method: 'POST',
-                      mode:'cors',
-                      cache: 'no-cache', // *default, no-cache, reload, force-
-                      headers: {
-                        'Content-Type': 'application/json'
-                      },
-                      body: JSON.stringify({"email":self.$parent.formData.email})
-	        });
-            self.qrImage = await response.text();
+            const result = await request("qrcode",{"email":email});
+            self.qrImage = result.qr;
           } catch (e) {
             console.error(e);
           }
@@ -77,7 +105,7 @@ document.addEventListener("DOMContentLoaded", function () {
     <label
         for="member_email"
         kjb-settings-id="sections_login_settings_email"
-        >Enter authenticator code </label
+        >Enter 2FA code </label
     >
         <input
             class="form-control auth__field"
@@ -88,14 +116,14 @@ document.addEventListener("DOMContentLoaded", function () {
             value=""
         />
     </label>
-        <div class=\"box\"> <a href="#" @click="getQrCode()">get QR </a> :<div v-html="qrImage"></div>
+        <div class=\"box\"> <a href="#" @click="getQrCode()">generate my QR code </a> :<div v-html="qrImage"></div>
     </div>
     <div v-show="error" class="form-group">{{ error }} </div>
     <button 
     class="form-btn btn--outline btn--auto btn--large"
     @click="verify($event)"
     >
-    Pre-Submit
+    התחברות
     </button>
     </div> 
 </div>`,
@@ -107,92 +135,27 @@ new Vue({
     el: "#twofa",
     data: {
         mounted: false,
-        verified: false,
         twofa: false,
         formData: {
             name: '',
             email: '',
             password: ''
         },
-        QRImage: '',
-        error:""
     },
     watch: {
-        'formData.email': (oldval, newval) => {
-            console.log(newval);
+        'formData.email': function(oldval, newval) {
+            this.$refs.tokenComponent.error ="";
+        },
+        'formData.password': function(oldval, newval) {
+            this.$refs.tokenComponent.error ="";
         }
     },
     mounted() {
         var self = this;
         self.mounted = true;
-        console.log("window.location.href:",window.location.href)
         if(window.location.href.match(/\?twofa=true/))
             self.twofa = true;
     },
-    methods: {
-        async verify(e) {
-            const self = this;
-            e.preventDefault();
-            
-            if (!(this.formData.email && this.$refs.tokenComponent.token && this.formData.password)){
-                alert("missing token or email or password");
-                return ;
-            }
-            if(!this.validateEmail(this.formData.email))    {
-                alert("please insert valid email");
-                return ;
-            }
-            try { 
-                const response = await fetch("https://udifili.com/api/verify",{
-                                            method: 'POST',
-					    mode:'cors',
-                                            cache: 'no-cache', // *default, no-cache, reload, force-
-                                            headers: {
-                                                'Content-Type': 'application/json'
-                                            },
-                                            body: JSON.stringify({"email":this.formData.email,"token":this.$refs.tokenComponent.token}) 
-                    });
-                const result = await response.json();
-                if(result.success) {
-                  
-                    document.querySelector("#new_member_session").submit()
-                } else {
-                    self.error = "Failed to verify 2fa , please try again";
-                }
-            } catch(err) { 
-                console.error(err)
-            }
-    return false
-     },
-
-        validateEmail: function (input) {
-           
-            var validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-          
-            if (input.match(validRegex))
-                return true;
-            return false;
-        },
-        getQrCode: async function(){
-            const self = this;
-            console.log(self.formData)
-            if (!self.validateEmail(self.formData.email))
-                return;
-            try {
-                let response = await fetch('https://udifili.com/api/qrcode?email=' + self.formData.email, {
-			  mode:'cors',
-                    headers: { 'Content-Type': 'text/html' }
-                });
-                this.QRImage = await response.text();
-            } catch (e) {
-                console.error(e);
-            }
-        },
-        submitForm() {
-            // perform form submission here, using this.formData
-            console.log(this.formData)
-        }
-    }
   
 });
  
