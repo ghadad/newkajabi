@@ -133,25 +133,27 @@ class TwoFA {
     }
   }
 
-  async qrToDataUrl(qrcode) {
-    return new Promise(function (resolve, reject) {
+  qrToDataUrl(qrcode) {
+  const promise = new Promise(function(resolve, reject)  {
       QRCode.toDataURL(qrcode, function (err, dataUrl) {
-        if (err) reject(err);
+        if (err) return reject(err);
         return resolve(dataUrl);
       });
-    });
+  });
+
+    return promise ;
   }
+
   async qrcode(email) {
     try {
-      let row = await req.app.locals
-        .db("accounts")
+      let row = await 
+        db("accounts")
         .select("*")
         .where("email", "=", email)
         .first();
       console.log("row:", row);
       if (!row) {
-        return register(email);
-        // return res.status(401).json({success:false,code:"NOT_FOUND",message:'Email not found'});
+         return {success:false,code:"NOT_FOUND",message:'Email not found'};
       }
       if (row.verified_once == "Y") {
         return {
@@ -163,13 +165,13 @@ class TwoFA {
         };
       }
       const dataUrl = await this.qrToDataUrl(row.qrcode);
-      return res.json({ success: true, dataUrl: dataUrl });
+      return { success: true, dataUrl: dataUrl };
     } catch (e) {
       return {
         httpCode: 403,
         success: false,
         code: "QRCODE_ERROR",
-        message: "Failed to generate qr code",
+        message: "Failed to generate qr code :"+e.stack,
       };
     }
   }
