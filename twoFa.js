@@ -2,6 +2,8 @@ const QRCode = require('qrcode');
 const speakeasy = require('speakeasy');
 const mailer = require('./mailer');
 const ejs = require('./ejs');
+const uuid = require('uuid')
+
 
 
 function validateEmail(input) { 
@@ -12,15 +14,30 @@ function validateEmail(input) {
 }
 
 async function renewSecret(req,res) { 
- let email  = req.body.email || req.query.email ;
+ let email  =  req.query.email ;
+ let activationCode  =  req.query.activationCode ;
+
+ if(!activationCode) 
+   return res.status(403).json({success:false,code:"MISSING_WACTIVATION_CODE",message:"Missing activation code in query parameters"});
+
 
  if(!email)
       return res.status(403).json({success:false,code:"MISSING_EMAIL",message:'missing email address'});
   if(!validateEmail(email)) 
       return res.status(403).json({success:false,code:"INVALID_EMAIL",message:'Invalid email address'});
-   
+
+   const activationCode = uuid.v4() ;
+
    try { 
-	const mailBody  = await ejs.renderFile('./templates/register_2fa.ejs',{});
+        const row  = await req.app.locals.db('accounts').select('*').where('email','=',email).first();
+	if(row) { 
+		result = await req.app.locals.db('accounts').update({activation_code: activationCode}).where('email',email);
+			
+	} else { 
+
+	}
+
+	const mailBody  = await ejs.renderFile('./templates/register_2fa.ejs',{link:"https://udifili.com/api/activate?activationCode="+activationCode+"&email="+email});
       	//const mailResult = await mailer.sendMail(email,null,"Register new 2FA service","<a href='https://udifili.com/api/register?email=" + email +"'>Create new 2FA registration</a>");
       	const mailResult = await mailer.sendMail(email,null,"Register new 2FA service",mailBody);
        	console.log(mailResult);
@@ -91,8 +108,9 @@ async function qrcode(req,res) {
 
      let row  = await req.app.locals.db('accounts').select('*').where('email','=',req.body.email).first();
 
+    console.log("row:",row);
     if (!row) {
-	    return register(req,res);
+      return register(req,res);
       return res.status(401).json({success:false,code:"NOT_FOUND",message:'Email not found'});
     }
     if(row.verified_once == "Y") { 

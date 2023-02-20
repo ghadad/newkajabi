@@ -1,0 +1,13 @@
+{
+  "name": "my-app",
+  "script": "index.js",
+  "watch": true,
+  "ignore_watch": ["node_modules"],
+  "instances": 1,
+  "restart": "always",
+   "watch": true,
+  "log_date_format": "YYYY-MM-DD HH:mm Z",
+  "out_file": "/dev/null",
+  "error_file": "/dev/null",
+  "log_type": "json"
+}
