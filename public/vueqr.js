@@ -20,31 +20,31 @@ document.addEventListener("DOMContentLoaded", function () {
     data: {
       mounted: false,
       twofa: false,
-      qrImage:null
+      qrImage: null,
     },
-    mounted() {
+    async mounted() {
       var self = this;
       self.mounted = true;
-        self.qrImage = "";
-        const email = self.$parent.formData.email;
-        if (!self.validateEmail(email)) {
-          this.error = ' כתובת דוא"ל חסרה או שאינה  תקינה ';
-          return;
+      self.qrImage = "";
+      const email = self.$parent.formData.email;
+      if (!self.validateEmail(email)) {
+        this.error = ' כתובת דוא"ל חסרה או שאינה  תקינה ';
+        return;
+      }
+      try {
+        const result = await request("qrcode", { email: email });
+        if (result.success) {
+          self.qrImage = result.qr;
+          self.twofa = true;
+        } else {
+          if (result.code == "ALREADY_REGISTERED")
+            self.error =
+              " הנך רשום לשירות הזדהות בשני שלבים , אנא הירשם שוב אם הינך צריך להנפיק ברקוד רישום חדש";
+          else self.error = result.message;
         }
-        try {
-          const result = await request("qrcode", { email: email });
-          if (result.success) {
-            self.qrImage = result.qr;
-            self.twofa = true;
-          } else {
-            if (result.code == "ALREADY_REGISTERED")
-              self.error =
-                " הנך רשום לשירות הזדהות בשני שלבים , אנא הירשם שוב אם הינך צריך להנפיק ברקוד רישום חדש";
-            else self.error = result.message;
-          }
-        } catch (e) {
-          console.info(e);
-        }
-      },
+      } catch (e) {
+        console.info(e);
+      }
+    },
   });
 });
