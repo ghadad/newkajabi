@@ -1,20 +1,19 @@
 document.addEventListener("DOMContentLoaded", function () {
   const BASE_URL = "https://udifili.com/api";
 
-const qs = function(){
-     let getVars = {};
-     let uri = window.location.href.split('?');
-    if(uri.length == 2) {
-      let vars = uri[1].split('&');
-      let tmp = '';
-      vars.forEach(function(v) {
-        tmp = v.split('=');
-        if(tmp.length == 2)
-          getVars[tmp[0]] = tmp[1];
+  const qs = function () {
+    let getVars = {};
+    let uri = window.location.href.split("?");
+    if (uri.length == 2) {
+      let vars = uri[1].split("&");
+      let tmp = "";
+      vars.forEach(function (v) {
+        tmp = v.split("=");
+        if (tmp.length == 2) getVars[tmp[0]] = tmp[1];
       });
     }
-    return getVars ;
-  }
+    return getVars;
+  };
 
   const request = async function (path, body, type = "json") {
     const response = await fetch("https://udifili.com/api/" + path, {
@@ -34,19 +33,18 @@ const qs = function(){
   new Vue({
     el: "#twofa-qrcode",
     data: {
-      error:"",
+      error: "",
       mounted: false,
       twofa: false,
-      qrImage: ""
+      qrImage: "",
     },
     async mounted() {
       var self = this;
       self.mounted = true;
       self.qrImage = "";
       const queryParams = qs();
-      const email=queryParams.email;
-      if(!email) 
-	    return alert("missing email");
+      const email = queryParams.email;
+      if (!email) return alert("missing email");
       try {
         const result = await request("qrcode", { email: email });
         if (result.success) {
@@ -54,11 +52,11 @@ const qs = function(){
           self.twofa = true;
         } else {
           self.error = result.message;
-	}
+        }
       } catch (e) {
-          self.error = e.message;
+        self.error = e.message;
         console.info(e);
       }
-    }
+    },
   });
 });
