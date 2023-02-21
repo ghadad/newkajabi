@@ -39,6 +39,7 @@ document.addEventListener("DOMContentLoaded", function () {
       qrImage: "",
     },
     async mounted() {
+      var imgElement = document.querySelector('img[alt="getqr"]')
       var self = this;
       self.mounted = true;
       self.qrImage = "";
@@ -49,6 +50,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const result = await request("qrcode", { email: email });
         if (result.success) {
           self.qrImage = result.dataUrl;
+		imgElement.src = self.qrImage;
           self.twofa = true;
         } else {
           self.error = result.message;
