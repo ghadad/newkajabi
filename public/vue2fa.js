@@ -111,7 +111,7 @@ document.addEventListener("DOMContentLoaded", function () {
     <label
         for="member_email"
         kjb-settings-id="sections_login_settings_email"
-        >Enter 2FA code </label
+        >הזינו את הקוד מאפליקציית האימות </label
     >
         <input
             class="form-control auth__field"
@@ -122,7 +122,7 @@ document.addEventListener("DOMContentLoaded", function () {
             value=""
         />
     </label>
-        <div class=\"box\"> <a href="#" @click="getQrCode()">generate my QR code </a> :<div v-html="qrImage"></div>
+        <div class=\"box\"> <a href="#" @click="register()">לרישום לאימות הדו שלבי ולקבלת הוראות </a> :<div v-html="qrImage"></div>
     </div>
     <div v-show="error" class="form-group">{{ error }} </div>
     <button 

@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-  const BASE_URL = "https://udifili.com/api";
+  const BASE_URL = "https://udifili.com/api/";
 
   const qs = function () {
     let getVars = {};
@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
   };
 
   const request = async function (path, body, type = "json") {
-    const response = await fetch("https://udifili.com/api/" + path, {
+    const response = await fetch(BASE_URL + path, {
       method: "POST",
       mode: "cors",
       cache: "no-cache", // *default, no-cache, reload, force-
@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", function () {
       qrImage: "",
     },
     async mounted() {
-      var imgElement = document.querySelector('img[alt="getqr"]')
+      var imgElement = document.querySelector('img[alt="getqr"]');
       var self = this;
       self.mounted = true;
       self.qrImage = "";
@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const result = await request("qrcode", { email: email });
         if (result.success) {
           self.qrImage = result.dataUrl;
-		imgElement.src = self.qrImage;
+          imgElement.src = self.qrImage;
           self.twofa = true;
         } else {
           self.error = result.message;
