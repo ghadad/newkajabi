@@ -6,11 +6,14 @@ const ejs = require("./ejs");
 const uuid = require("uuid");
 const validator = require("validator");
 //validator.isEmail('foo@bar.com'); //=> true
+const ACCOUNTS = "accounts";
 
 class TwoFA {
+
+
   async count() {
     try {
-      let count = await db("accounts").count("id as accounts").first();
+      let count = await db(ACCOUNTS).count("id as accounts").first();
       return { success: true, ...count };
     } catch (e) {
       return {
@@ -21,14 +24,18 @@ class TwoFA {
     }
   }
 
-  async activate(activationCode, email) {
+  async activate(email,activationCode) {
+    const result =  await db(ACCOUNTS).select("*").where("email","=",email).first();
+    if(result.activation_code != activationCode  || result.activated == 1) 
+	  return {success:false,code:"ACTIVATION_ERROR",message:"Failed to verify activation code or already activated " };
+    await this.register(email,activationCode,1);
     return { success: true };
   }
 
   async renewSecret(email) {
     try {
       let activationCode = uuid.v4();
-      let result = await this.register(email, activationCode);
+      let result = await this.register(email, activationCode,0);
       if (result.success === false) return result;
 
       const mailBody = await ejs.renderTemplate("register_2fa", {
@@ -56,7 +63,7 @@ class TwoFA {
     }
   }
 
-  async register(email, activationCode) {
+  async register(email, activationCode,activated=0) {
     const secret = speakeasy.generateSecret({
       length: 20,
       name: "Difuzia 2FA",
@@ -73,6 +80,8 @@ class TwoFA {
             secret: secret.base32,
             qrcode: secret.otpauth_url,
             activation_code: activationCode,
+            scans: 0,
+            activated:activated
           })
           .where("email", email);
       } else {
@@ -81,6 +90,8 @@ class TwoFA {
           secret: secret.base32,
           qrcode: secret.otpauth_url,
           activation_code: activationCode,
+          scans: 0,
+          activated:activated
         });
       }
       return { success: true, result: result };
@@ -151,19 +162,30 @@ class TwoFA {
         .select("*")
         .where("email", "=", email)
         .first();
-      console.log("row:", row);
+        console.log("row:", row);
       if (!row) {
          return {success:false,code:"NOT_FOUND",message:'Email not found'};
       }
-      if (row.verified_once == "Y") {
+      if (row.scans > 0) {
         return {
           httpCode: 403,
           success: false,
           code: "ALREADY_REGISTERED",
           message:
-            "You can register your barcode only one time , please register again if you need new registration",
+            "You can scan your barcode only one time , please register again if you need new registration",
         };
       }
+      if (row.activated != 1) {
+        return {
+          httpCode: 403,
+          success: false,
+          code: "NOT_ACTIVATED",
+          message:
+            "You didnt activate your registration  , look at you mail box for further instructions",
+        };
+      }
+
+      await db("accounts").update({ scans:row.scans+1 }).where("email", email);
       const dataUrl = await this.qrToDataUrl(row.qrcode);
       return { success: true, dataUrl: dataUrl };
     } catch (e) {

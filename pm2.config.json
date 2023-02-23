@@ -7,7 +7,7 @@
   "restart": "always",
    "watch": true,
   "log_date_format": "YYYY-MM-DD HH:mm Z",
-  "out_file": "out.log",
-  "error_file": "err.log",
-  "log_type": "json"
+  //"out_file": "out.log",
+ // "error_file": "err.log",
+ // "log_type": "json"
 }

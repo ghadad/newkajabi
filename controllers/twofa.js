@@ -24,14 +24,15 @@ async function activate(req, res) {
       message: "Invalid email address",
     });
 
-  let result = await TwoFA.activate(email);
+  let result = await TwoFA.activate(email,activationCode);
   console.log(result);
   if (result.success === false)
     return res.status(result.httpCode || 403).json(result);
-  return res.json(result);
+  return res.redirect('https://www.difuzia.org/2fa?email='+email);
 }
+
 async function renewSecret(req, res) {
-  let email = req.query.email;
+  let email = req.body.email;
 
   if (!email)
     return res.status(403).json({

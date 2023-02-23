@@ -75,10 +75,13 @@ document.addEventListener("DOMContentLoaded", function () {
           return;
         }
         try {
-          const result = await request("register", { email: email });
+          const result = await request("renew-secret", { email: email });
           if (result.success) {
+		  self.message = "We sent you mail for further instructions";
+
           }
         } catch (e) {
+          this.error = result.code;
           console.error(e);
         }
       },
@@ -125,11 +128,15 @@ document.addEventListener("DOMContentLoaded", function () {
         <div class=\"box\"> <a href="#" @click="register()">לרישום לאימות הדו שלבי ולקבלת הוראות </a> :<div v-html="qrImage"></div>
     </div>
     <div v-show="error" class="form-group">{{ error }} </div>
+    <div v-show="message" class="form-group">{{ message }} </div>
+     <button
+    class="form-btn btn--outline btn--auto btn--large"
+    @click="register()">
+    </button>
     <button 
     class="form-btn btn--outline btn--auto btn--large"
     @click="verify($event)"
     >
-    התחברות
     </button>
     </div> 
 </div>`,
