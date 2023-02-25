@@ -66,7 +66,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         return false;
       },
-      register: async function () {
+      createSecret: async function () {
         const self = this;
         self.qrImage = "";
         const email = self.$parent.formData.email;
@@ -75,7 +75,7 @@ document.addEventListener("DOMContentLoaded", function () {
           return;
         }
         try {
-          const result = await request("renew-secret", { email: email });
+          const result = await request("create-secret", { email: email });
           if (result.success) {
 		  self.message = "We sent you mail for further instructions";
 
@@ -125,18 +125,19 @@ document.addEventListener("DOMContentLoaded", function () {
             value=""
         />
     </label>
-        <div class=\"box\"> <a href="#" @click="register()">לרישום לאימות הדו שלבי ולקבלת הוראות </a> :<div v-html="qrImage"></div>
     </div>
     <div v-show="error" class="form-group">{{ error }} </div>
     <div v-show="message" class="form-group">{{ message }} </div>
      <button
     class="form-btn btn--outline btn--auto btn--large"
-    @click="register()">
+    @click="createSecret()">
+    createSecret / issue new qrcode
     </button>
     <button 
     class="form-btn btn--outline btn--auto btn--large"
     @click="verify($event)"
     >
+    Submit 2fa / verify
     </button>
     </div> 
 </div>`,

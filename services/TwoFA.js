@@ -35,9 +35,6 @@ class TwoFA {
   async renewSecret(email) {
     try {
       let activationCode = uuid.v4();
-      let result = await this.register(email, activationCode,0);
-      if (result.success === false) return result;
-
       const mailBody = await ejs.renderTemplate("register_2fa", {
         link:
           "https://udifili.com/api/activate?activationCode=" +
@@ -106,10 +103,6 @@ class TwoFA {
   }
 
   async verify(email, token) {
-    const secret = speakeasy.generateSecret({
-      length: 20,
-      name: "Difuzia 2FA",
-    });
     let row = await db("accounts")
       .select("*")
       .where("email", "=", email)
