@@ -66,7 +66,8 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         return false;
       },
-      createSecret: async function () {
+      createSecret: async function (e) {
+        e.preventDefault();
         const self = this;
         self.qrImage = "";
         const email = self.$parent.formData.email;
@@ -130,7 +131,7 @@ document.addEventListener("DOMContentLoaded", function () {
     <div v-show="message" class="form-group">{{ message }} </div>
      <button
     class="form-btn btn--outline btn--auto btn--large"
-    @click="createSecret()">
+    @click="createSecret($event)">
     createSecret / issue new qrcode
     </button>
     <button 
