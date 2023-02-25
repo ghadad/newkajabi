@@ -104,5 +104,5 @@ module.exports = {
   qrcode,
   register,
   verify,
-  renewSecret,
+  createSecret,
 };
