@@ -78,11 +78,13 @@ document.addEventListener("DOMContentLoaded", function () {
         try {
           const result = await request("create-secret", { email: email });
           if (result.success) {
-		  self.message = "We sent you mail for further instructions";
+		            self.message = "We sent you mail for further instructions";
 
+          } else { 
+            this.error = result.message;
           }
         } catch (e) {
-          this.error = result.code;
+          this.error = e.message;
           console.error(e);
         }
       },
