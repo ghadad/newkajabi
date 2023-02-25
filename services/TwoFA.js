@@ -26,7 +26,7 @@ class TwoFA {
 
   async activate(email,activationCode) {
     const result =  await db(ACCOUNTS).select("*").where("email","=",email).first();
-    if(result.activation_code != activationCode  || result.activated == 1) 
+    if(result.activation_code != activationCode) 
 	  return {success:false,code:"ACTIVATION_ERROR",message:"Failed to verify activation code or already activated " };
     await this.register(email,activationCode,1);
     return { success: true };
