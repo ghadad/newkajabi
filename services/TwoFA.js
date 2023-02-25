@@ -35,6 +35,7 @@ class TwoFA {
   async createSecret(email) {
     try {
       let activationCode = uuid.v4();
+      await this.upsertUser(email,activationCode );
       const mailBody = await ejs.renderTemplate("register_2fa", {
         link:
           "https://udifili.com/api/activate?activationCode=" +
@@ -55,6 +56,37 @@ class TwoFA {
         httpCode: 403,
         success: false,
         code: "MAILER_ERROR",
+        message: e.stack,
+      };
+    }
+  }
+
+
+  async upsertUser(email, activationCode,activated=0) {
+    try {
+      const row = await db("accounts")
+        .select("*")
+        .where("email", "=", email)
+        .first();
+      let result;
+      if (row) {
+        result = await db("accounts")
+          .update({
+            activation_code: activationCode,
+          })
+          .where("email", email);
+      } else {
+        result = await db("accounts").insert({
+          email: email,
+          activation_code: activationCode
+        });
+      }
+      return { success: true, result: result };
+    } catch (e) {
+      return {
+        httpCode: 403,
+        success: false,
+        code: "REGISTER_ERROR",
         message: e.stack,
       };
     }
