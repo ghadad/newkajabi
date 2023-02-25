@@ -32,7 +32,7 @@ class TwoFA {
     return { success: true };
   }
 
-  async renewSecret(email) {
+  async createSecret(email) {
     try {
       let activationCode = uuid.v4();
       const mailBody = await ejs.renderTemplate("register_2fa", {

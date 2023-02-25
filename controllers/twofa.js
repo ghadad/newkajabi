@@ -31,7 +31,7 @@ async function activate(req, res) {
   return res.redirect('https://www.difuzia.org/2fa?email='+email);
 }
 
-async function renewSecret(req, res) {
+async function createSecret(req, res) {
   let email = req.body.email;
 
   if (!email)
@@ -47,7 +47,7 @@ async function renewSecret(req, res) {
       message: "Invalid email address",
     });
 
-  let result = await TwoFA.renewSecret(email);
+  let result = await TwoFA.createSecret(email);
   console.log(result);
   if (result.success === false)
     return res.status(result.httpCode || 403).json(result);

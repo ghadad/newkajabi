@@ -15,8 +15,7 @@ async function startApp() {
   app.post(basePath + "/verify", twofa.verify);
   app.post(basePath + "/register", twofa.register);
   app.post(basePath + "/qrcode", twofa.qrcode);
-  app.post(basePath + "/renew-secret", twofa.renewSecret);
-  app.post(basePath + "/renew-secret", twofa.renewSecret);
+  app.post(basePath + "/create-secret", twofa.createSecret);
   app.get(basePath + "/activate", twofa.activate);
   app.get(basePath + "/info", info.info);
 
