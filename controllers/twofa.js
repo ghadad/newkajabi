@@ -79,7 +79,7 @@ async function register(req, res) {
 async function verify(req, res) {
   if (!req.body.email)
     return res.json({ success: false, message: "Missing email in body url" });
-  let result = await TwoFA.verify(req.body.email);
+  let result = await TwoFA.verify(req.body.email,req.body.token);
   if (result.success === false)
     return res.status(result.httpCode || 403).json(result);
   return res.json(result);
