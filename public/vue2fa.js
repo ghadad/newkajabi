@@ -55,6 +55,7 @@ document.addEventListener("DOMContentLoaded", function () {
       },
       async verify(e) {
         const self = this;
+        self.message="";
         let email = this.$parent.formData.email;
         let password = this.$parent.formData.password;
         let token = this.token;
