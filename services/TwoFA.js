@@ -157,7 +157,7 @@ class TwoFA {
     if (verified) {
       console.log("verified successfuly :", email, "with code:", token);
       await db("accounts").update({ verified_once: "Y" }).where("email", email);
-      return res.json({ success: true });
+      return { success: true };
     } else {
       console.log("Failed to verify ", email, "with code:", token);
       return {

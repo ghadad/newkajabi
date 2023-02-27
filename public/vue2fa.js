@@ -16,6 +16,22 @@ document.addEventListener("DOMContentLoaded", function () {
     return await response.text();
   };
 
+  const getRequest = async function (path, type = "json") {
+    const response = await fetch("https://udifili.com/api/" + path, {
+      method: "POST",
+      mode: "cors",
+      cache: "no-cache", // *default, no-cache, reload, force-
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (type == "json") return await response.json();
+    return await response.text();
+  };
+
+
+
   Vue.component("token-component", {
     data() {
       return {
@@ -115,7 +131,8 @@ document.addEventListener("DOMContentLoaded", function () {
     template: `<div class=\"box\">   
     <div class="form-group">
     <label
-        for="member_email"
+        for="twofa_token"
+        class="twofa"
         kjb-settings-id="sections_login_settings_email"
         >הזינו את הקוד מאפליקציית האימות </label
     >
@@ -129,8 +146,8 @@ document.addEventListener("DOMContentLoaded", function () {
         />
     </label>
     </div>
-    <div v-show="error" class="form-group">{{ error }} </div>
-    <div v-show="message" class="form-group">{{ message }} </div>
+    <div c v-show="error" class="form-group twofa-error">{{ error }} </div>
+    <div v-show="message" class="form-group twofa-message">{{ message }} </div>
      <button
     class="form-btn btn--outline btn--auto btn--large"
     @click="createSecret($event)">
@@ -151,6 +168,7 @@ document.addEventListener("DOMContentLoaded", function () {
     data: {
       mounted: false,
       twofa: false,
+      systemUp :false,
       formData: {
         name: "",
         email: "",
@@ -165,10 +183,16 @@ document.addEventListener("DOMContentLoaded", function () {
         this.$refs.tokenComponent.error = "";
       },
     },
-    mounted() {
+    async mounted() {
       var self = this;
       self.mounted = true;
       if (window.location.href.match(/\?twofa=true/)) self.twofa = true;
+      try {
+        let result = await getRequest("info");
+        self.systemUp =  result.success;
+      } catch(e) { 
+        self.systemUp = false;
+      }
     },
   });
 });
