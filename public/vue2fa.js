@@ -94,7 +94,7 @@ document.addEventListener("DOMContentLoaded", function () {
         try {
           const result = await request("create-secret", { email: email });
           if (result.success) {
-		            self.message = "We sent you mail for further instructions";
+		            self.message = "נשלח אלייך מייל להמשך הוראות להפעלת האימות";
 
           } else { 
             this.error = result.message;
@@ -110,7 +110,7 @@ document.addEventListener("DOMContentLoaded", function () {
         self.qrImage = "";
         const email = self.$parent.formData.email;
         if (!self.validateEmail(email)) {
-          this.error = ' כתובת דוא"ל חסרה או שאינה  תקינה ';
+          this.error = 'כתובת דוא"ל חסרה או שאינה  תקינה ';
           return;
         }
         try {
@@ -151,13 +151,12 @@ document.addEventListener("DOMContentLoaded", function () {
      <button
     class="form-btn btn--outline btn--auto btn--large"
     @click="createSecret($event)">
-    createSecret / issue new qrcode
-    </button>
+    רישום/איפוס אימות דו שלבי  </button>
     <button 
     class="form-btn btn--outline btn--auto btn--large"
     @click="verify($event)"
     >
-    Submit 2fa / verify
+    התחברות
     </button>
     </div> 
 </div>`,
