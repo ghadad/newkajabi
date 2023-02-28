@@ -53,10 +53,15 @@ document.addEventListener("DOMContentLoaded", function () {
           imgElement.src = self.qrImage;
           self.twofa = true;
         } else {
+          if(result.code =="ALREADY_REGISTERED") {
+            self.error = "הקוד כבר הופעל בעבר , תוכל ליצור קוד חדש במסך ההתחברות לאתר דיפוזיה";
+            imgElement.src = "htpps://udifili.com/images/qrerr.png";
+          }          
+          else 
           self.error = result.message;
         }
       } catch (e) {
-        self.error = e.message;
+        self.error = "שגיאה ביצירת ברקוד";
         console.info(e);
       }
     },
