@@ -151,7 +151,7 @@ document.addEventListener("DOMContentLoaded", function () {
     <a href="#" @click="createSecret($event)">    רישום/איפוס חשבון אימות דו שלבי  </a>
      </div>
     <div v-show="error" class="form-group twofa-error">{{ error }} </div>
-    <div v-show="message" class="form-group twofa-message" v-bind-html="message"></div>
+    <div v-show="message" class="form-group twofa-message" v-html="message"></div>
     
     <button 
     class="form-btn btn--outline btn--auto btn--large"
