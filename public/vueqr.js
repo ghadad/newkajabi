@@ -56,14 +56,14 @@ document.addEventListener("DOMContentLoaded", function () {
           self.qrImage = result.dataUrl;
           imgElement.src = self.qrImage;
           self.twofa = true;
-        } else {
-          if(result.code =="ALREADY_REGISTERED") {
+        } else if (result.code =="ALREADY_REGISTERED") {
             self.error = "הקוד כבר הופעל בעבר , תוכל ליצור קוד חדש במסך ההתחברות לאתר דיפוזיה";
             imgElement.src = "https://udifili.com/images/qrerr.png";
           }          
-          else 
-          self.error = result.message || "התרחשה שגיאה";
-        }
+          else if(result.code =="NOT_FOUND") {
+            self.error = "אימייל לא נמצא במערכת";
+          } else 
+            self.error = result.message || "התרחשה שגיאה";
       } catch (e) {
         self.error = "שגיאה ביצירת ברקוד";
         console.info(e);
