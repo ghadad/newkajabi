@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", function () {
         } else {
           if(result.code =="ALREADY_REGISTERED") {
             self.error = "הקוד כבר הופעל בעבר , תוכל ליצור קוד חדש במסך ההתחברות לאתר דיפוזיה";
-            imgElement.src = "htpps://udifili.com/images/qrerr.png";
+            imgElement.src = "https://udifili.com/images/qrerr.png";
           }          
           else 
           self.error = result.message;
