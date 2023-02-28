@@ -47,6 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const email = queryParams.email;
       if (!email) {
         self.error ="חסר אימייל להפעלה" ;
+        imgElement.src = "https://udifili.com/images/qrerr.png";
         return;
       } 
       
@@ -62,8 +63,10 @@ document.addEventListener("DOMContentLoaded", function () {
           }          
           else if(result.code =="NOT_FOUND") {
             self.error = "אימייל לא נמצא במערכת";
+            imgElement.src = "https://udifili.com/images/qrerr.png";
           } else 
             self.error = result.message || "התרחשה שגיאה";
+            imgElement.src = "https://udifili.com/images/qrerr.png";
       } catch (e) {
         self.error = "שגיאה ביצירת ברקוד";
         console.info(e);
