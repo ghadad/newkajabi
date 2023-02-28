@@ -40,6 +40,7 @@ document.addEventListener("DOMContentLoaded", function () {
     },
     async mounted() {
       var imgElement = document.querySelector('img[alt="getqr"]');
+      var errorElement = document.querySelector('vue-error');
       imgElement.className += " qrcode";
       var self = this;
       self.mounted = true;
@@ -47,7 +48,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const queryParams = qs();
       const email = queryParams.email;
       if (!email) {
-        self.error ="חסר אימייל להפעלה" ;
+        errorElement.innerHTML ="חסר אימייל להפעלה" ;
         imgElement.src = "https://udifili.com/images/qrerr.png";
         return;
       } 
@@ -59,17 +60,17 @@ document.addEventListener("DOMContentLoaded", function () {
           imgElement.src = self.qrImage;
           self.twofa = true;
         } else if (result.code =="ALREADY_REGISTERED") {
-            self.error = "הקוד כבר הופעל בעבר , תוכל ליצור קוד חדש במסך ההתחברות לאתר דיפוזיה";
+             errorElement.innerHTML = "הקוד כבר הופעל בעבר , תוכל ליצור קוד חדש במסך ההתחברות לאתר דיפוזיה";
             imgElement.src = "https://udifili.com/images/qrerr.png";
           }          
           else if(result.code =="NOT_FOUND") {
-            self.error = "אימייל לא נמצא במערכת";
+            errorElement.innerHTML = "אימייל לא נמצא במערכת";
             imgElement.src = "https://udifili.com/images/qrerr.png";
           } else 
-            self.error = result.message || "התרחשה שגיאה";
+          errorElement.innerHTML = result.message || "התרחשה שגיאה";
             imgElement.src = "https://udifili.com/images/qrerr.png";
       } catch (e) {
-        self.error = "שגיאה ביצירת ברקוד";
+        errorElement.innerHTML = "שגיאה ביצירת ברקוד";
         console.info(e);
       }
     },
