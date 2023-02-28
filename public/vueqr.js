@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", function () {
     },
     async mounted() {
       var imgElement = document.querySelector('img[alt="getqr"]');
-      imgElement.addClass("qrcode");
+      imgElement.className += " qrcode";
       var self = this;
       self.mounted = true;
       self.qrImage = "";
