@@ -29,8 +29,8 @@ class TwoFA {
     if(result.activation_code != activationCode) 
 	  return {success:false,code:"ACTIVATION_ERROR",message:"Failed to verify activation code" };
 
-    if(result.activated==1) 
-	  return {success:false,code:"ALREADY_ACTIVE",message:"already activated " };
+   // if(result.activated==1) 
+	 // return {success:false,code:"ALREADY_ACTIVE",message:"already activated " };
 
     await this.register(email,activationCode,1);
     return { success: true };
