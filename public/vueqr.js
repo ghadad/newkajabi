@@ -45,8 +45,12 @@ document.addEventListener("DOMContentLoaded", function () {
       self.qrImage = "";
       const queryParams = qs();
       const email = queryParams.email;
-      if (!email) return alert("missing email");
-      try {
+      if (!email) {
+        self.error ="חסר אימייל להפעלה" ;
+        return;
+      } 
+      
+        try {
         const result = await request("qrcode", { email: email });
         if (result.success) {
           self.qrImage = result.dataUrl;
@@ -58,7 +62,7 @@ document.addEventListener("DOMContentLoaded", function () {
             imgElement.src = "https://udifili.com/images/qrerr.png";
           }          
           else 
-          self.error = result.message;
+          self.error = result.message || "התרחשה שגיאה";
         }
       } catch (e) {
         self.error = "שגיאה ביצירת ברקוד";
