@@ -95,7 +95,7 @@ document.addEventListener("DOMContentLoaded", function () {
         try {
           const result = await request("create-secret", { email: email });
           if (result.success) {
-		            self.message = "נשלח אלייך מייל להמשך הוראות להפעלת האימות";
+		            self.message = "נשלח אלייך מייל להמשך הוראות להפעלת האימות<br>(אם לא קיבלתם – חפשו בתיבת הספאם)";
 
           } else { 
             this.error = result.message;
