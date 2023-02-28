@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", function () {
     },
     async mounted() {
       var imgElement = document.querySelector('img[alt="getqr"]');
-      var errorElement = document.querySelector('vue-error');
+      var errorElement = document.querySelector('#vue-error');
       imgElement.className += " qrcode";
       var self = this;
       self.mounted = true;
