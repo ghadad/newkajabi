@@ -42,6 +42,12 @@ document.addEventListener("DOMContentLoaded", function () {
       };
     },
     watch: {
+      '$parent.formData.email' : function(){
+        this.error = "";
+      },
+      '$parent.formData.password' : function(){
+        this.error = "";
+      },
       token(oldval, newval) {
         this.error = "";
       },
