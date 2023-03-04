@@ -2,6 +2,12 @@ function insertAfter(referenceNode, newNode) {
   referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
 }
 
+function getDivsMessages(messages=[]){
+  return messages.map(function(e,i) { 
+    return '<div class="msg_"'+i +'">' + e +'</div>';
+  })
+}
+
 const errEl = document.createElement("div");
 errEl.innerHTML = "";
 errEl.setAttribute("id", "twofa-error");
@@ -74,9 +80,15 @@ document.addEventListener("DOMContentLoaded", function () {
           imgElement.src = result.dataUrl;
           self.twofa = true;
         } else if (result.code =="ALREADY_REGISTERED") {
-             errorElement.innerHTML = "הקוד כבר הופעל בעבר , תוכל ליצור קוד חדש במסך ההתחברות לאתר דיפוזיה";
+             errorElement.innerHTML =getDivsMessages(["הקוד כבר הופעל בעבר , תוכל ליצור קוד חדש במסך ההתחברות לאתר דיפוזיה",
+             "<a href='difuzia.org/login'>דיפוזיה</a>"]);
             imgElement.src = "https://udifili.com/images/qrerr.png";
           }          
+          else if (result.code =="ACTIVATION_ERROR") {
+            errorElement.innerHTML =getDivsMessages(["קוד הפעלה שגוי , תוכל ליצור קוד חדש במסך ההתחברות לאתר דיפוזיה",
+             "<a href='difuzia.org/login'>דיפוזיה</a>"]);
+           imgElement.src = "https://udifili.com/images/qrerr.png";
+         }          
           else if(result.code =="NOT_FOUND") {
             errorElement.innerHTML = "אימייל לא נמצא במערכת";
             imgElement.src = "https://udifili.com/images/qrerr.png";
