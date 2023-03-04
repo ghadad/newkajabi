@@ -1,3 +1,13 @@
+function insertAfter(referenceNode, newNode) {
+  referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+}
+
+const errEl = document.createElement("div");
+errEl.innerHTML = "";
+errEl.setAttribute("id", "twofa-error");
+errEl.setAttribute("class", "twofa-error");
+
+
 document.addEventListener("DOMContentLoaded", function () {
   const BASE_URL = "https://udifili.com/api/";
 
@@ -40,7 +50,11 @@ document.addEventListener("DOMContentLoaded", function () {
     },
     async mounted() {
       var imgElement = document.querySelector('img[alt="getqr"]');
-      var errorElement = document.querySelector('#vue-error');
+      if (imgElement) {
+         imgElement.parentElement.classList.add('qr-wrapper');
+      } 
+      insertAfter(imgElement, errEl);
+      var errorElement = errEl ;// document.querySelector('#twofa-error');
       imgElement.className += " qrcode";
       var self = this;
       self.mounted = true;
@@ -57,7 +71,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const result = await request("qrcode", { email: email });
         if (result.success) {
           self.qrImage = result.dataUrl;
-          imgElement.src = self.qrImage;
+          imgElement.src = result.dataUrl;
           self.twofa = true;
         } else if (result.code =="ALREADY_REGISTERED") {
              errorElement.innerHTML = "הקוד כבר הופעל בעבר , תוכל ליצור קוד חדש במסך ההתחברות לאתר דיפוזיה";
@@ -66,9 +80,10 @@ document.addEventListener("DOMContentLoaded", function () {
           else if(result.code =="NOT_FOUND") {
             errorElement.innerHTML = "אימייל לא נמצא במערכת";
             imgElement.src = "https://udifili.com/images/qrerr.png";
-          } else 
+          } else {
           errorElement.innerHTML = result.message || "התרחשה שגיאה";
             imgElement.src = "https://udifili.com/images/qrerr.png";
+	  }
       } catch (e) {
         errorElement.innerHTML = "שגיאה ביצירת ברקוד";
         console.info(e);

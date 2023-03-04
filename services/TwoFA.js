@@ -26,13 +26,15 @@ class TwoFA {
 
   async activate(email,activationCode) {
     const result =  await db(ACCOUNTS).select("*").where("email","=",email).first();
-    if(result.activation_code != activationCode) 
-	  return {success:false,code:"ACTIVATION_ERROR",message:"Failed to verify activation code" };
 
-   // if(result.activated==1) 
-	 // return {success:false,code:"ALREADY_ACTIVE",message:"already activated " };
+    if(result.activation_code != activationCode) {
+        console.log("activate:ACTIVATION_ERROR:",result);
+        await this.upsertUser(email,"ACTIVATION_ERROR" );
+        return { success: true };
+    }
+ 
 
-    await this.register(email,activationCode,1);
+    await this.register(email,0);
     return { success: true };
   }
 
@@ -96,7 +98,7 @@ class TwoFA {
     }
   }
 
-  async register(email, activationCode,activated=0) {
+  async register(email, activated=0) {
     const secret = speakeasy.generateSecret({
       length: 20,
       name: "Difuzia 2FA",
@@ -112,7 +114,7 @@ class TwoFA {
           .update({
             secret: secret.base32,
             qrcode: secret.otpauth_url,
-            activation_code: activationCode,
+            activation_code: null,
             scans: 0,
             activated:activated
           })
@@ -122,7 +124,7 @@ class TwoFA {
           email: email,
           secret: secret.base32,
           qrcode: secret.otpauth_url,
-          activation_code: activationCode,
+          activation_code: null,
           scans: 0,
           activated:activated
         });
@@ -193,9 +195,21 @@ class TwoFA {
         .first();
         console.log("row:", row);
       if (!row) {
+        console.log("qrcode NOT FOUND:",row);
          return {success:false,code:"NOT_FOUND",message:'Email not found'};
       }
+      if(row.activation_code == "ACTIVATION_ERROR") {
+        console.log("qrcode ACTIVATION_ERROR:",row);
+        return {
+          httpCode: 403,
+          success: false,
+          code: "ACTIVATION_ERROR",
+          message: "ACTIVATION_ERROR"
+        };
+      }
+	    
       if (row.scans > 0) {
+        console.log("qrcode ALREADY_REGISTERED:",row);
         return {
           httpCode: 403,
           success: false,
@@ -204,7 +218,7 @@ class TwoFA {
             "You can scan your barcode only one time , please register again if you need new registration",
         };
       }
-      if (row.activated != 1) {
+      if (false && row.activated != 1) {
         return {
           httpCode: 403,
           success: false,
