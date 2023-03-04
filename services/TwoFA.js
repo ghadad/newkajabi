@@ -30,10 +30,15 @@ class TwoFA {
     if(result.activation_code != activationCode) {
         console.log("activate:ACTIVATION_ERROR:",result);
         await this.upsertUser(email,"ACTIVATION_ERROR" );
+        await db("scans").insert({
+          email: email,
+          status: 0,
+          status_code :"ACTIVATION_ERROR - EMAIL INITIATOR"
+        }).catch(e=>console.error("insert scans error - in activation",e));
+
         return { success: true };
     }
  
-
     await this.register(email,0);
     return { success: true };
   }
@@ -129,8 +134,19 @@ class TwoFA {
           activated:activated
         });
       }
+      await db("scans").insert({
+        email: email,
+        status: 1,
+        status_code:"SUCCESS"
+      }).catch(e=>console.error("insert scans error",e));
+
       return { success: true, result: result };
     } catch (e) {
+      await db("scans").insert({
+        email: email,
+        status: 0,
+        status_code:"REGISTER_ERROR"
+      }).catch(err>console.error("insert scans error",err));
       return {
         httpCode: 403,
         success: false,
@@ -146,6 +162,12 @@ class TwoFA {
       .where("email", "=", email)
       .first();
     if (!row) {
+      await db("verifications").insert({
+        email: email,
+        status: 0,
+        status_code:"NOT_FOUND"
+      }).catch(err>console.error("insert verifications error",err));
+
       return {
         httpCode: 403,
         success: false,
@@ -163,9 +185,22 @@ class TwoFA {
     if (verified) {
       console.log("verified successfuly :", email, "with code:", token);
       await db("accounts").update({ verified_once: "Y" }).where("email", email);
+      await db("verifications").insert({
+        email: email,
+        status: 1,
+        status_code:"SUCCESS"
+      }).catch(err>console.error("insert verifications error",err));
+
       return { success: true };
     } else {
       console.log("Failed to verify ", email, "with code:", token);
+      await db("verifications").insert({
+        email: email,
+        status: 0,
+        status_code:"VERIFY_ERROR"
+      }).catch(err>console.error("insert verifications error",err));
+
+
       return {
         httpCode: 403,
         success: false,
@@ -195,10 +230,22 @@ class TwoFA {
         .first();
         console.log("row:", row);
       if (!row) {
-        console.log("qrcode NOT FOUND:",row);
+         console.log("qrcode NOT FOUND:",row);
+         await db("scans").insert({
+          email: email,
+          status: 0,
+          status_code:"NOT_FOUND"
+        }).catch(err>console.error("insert scans error",err));
+
          return {success:false,code:"NOT_FOUND",message:'Email not found'};
       }
       if(row.activation_code == "ACTIVATION_ERROR") {
+        await db("scans").insert({
+          email: email,
+          status: 0,
+          status_code:"ACTIVATION_ERROR - SITE INITIATOR"
+        }).catch(err>console.error("insert scans error",err));
+
         console.log("qrcode ACTIVATION_ERROR:",row);
         return {
           httpCode: 403,
@@ -210,6 +257,12 @@ class TwoFA {
 	    
       if (row.scans > 0) {
         console.log("qrcode ALREADY_REGISTERED:",row);
+        await db("scans").insert({
+          email: email,
+          status: 0,
+          status_code:"ALREADY_REGISTERED"
+        }).catch(err>console.error("insert scans error",err));
+
         return {
           httpCode: 403,
           success: false,
@@ -230,8 +283,21 @@ class TwoFA {
 
       await db("accounts").update({ scans:row.scans+1 }).where("email", email);
       const dataUrl = await this.qrToDataUrl(row.qrcode);
+      await db("scans").insert({
+        email: email,
+        status: 1,
+        status_code:"SUCCESS"
+      }).catch(err>console.error("insert scans error",err));
+
       return { success: true, dataUrl: dataUrl };
     } catch (e) {
+      console.error("QRCODE_ERROR:",e)
+      await db("scans").insert({
+        email: email,
+        status: 0,
+        status_code:"QRCODE_ERROR"
+      }).catch(err>console.error("insert scans error",err));
+
       return {
         httpCode: 403,
         success: false,

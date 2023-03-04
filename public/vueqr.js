@@ -81,12 +81,12 @@ document.addEventListener("DOMContentLoaded", function () {
           self.twofa = true;
         } else if (result.code =="ALREADY_REGISTERED") {
              errorElement.innerHTML =getDivsMessages(["הקוד כבר הופעל בעבר , תוכל ליצור קוד חדש במסך ההתחברות לאתר דיפוזיה",
-             "<a href='difuzia.org/login'>דיפוזיה</a>"]);
+             "<a href='login'>מסך התחברות של אתר דיפוזיה</a>"]);
             imgElement.src = "https://udifili.com/images/qrerr.png";
           }          
           else if (result.code =="ACTIVATION_ERROR") {
             errorElement.innerHTML =getDivsMessages(["קוד הפעלה שגוי , תוכל ליצור קוד חדש במסך ההתחברות לאתר דיפוזיה",
-             "<a href='difuzia.org/login'>דיפוזיה</a>"]);
+             "<a href='login'>מסך התחברות של אתר דיפוזיה</a>"]);
            imgElement.src = "https://udifili.com/images/qrerr.png";
          }          
           else if(result.code =="NOT_FOUND") {
