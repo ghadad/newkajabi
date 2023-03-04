@@ -3,15 +3,16 @@ function insertAfter(referenceNode, newNode) {
 }
 
 function getDivsMessages(messages=[]){
-  return messages.map(function(e,i) { 
+  return '<div id="twofa-error" class="twofa-error">' + 
+   messages.map(function(e,i) { 
     return '<div class="msg_"'+i +'">' + e +'</div>';
-  })
+  }).join("") +'</div>'
+
 }
 
 const errEl = document.createElement("div");
 errEl.innerHTML = "";
-errEl.setAttribute("id", "twofa-error");
-errEl.setAttribute("class", "twofa-error");
+
 
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -68,7 +69,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const queryParams = qs();
       const email = queryParams.email;
       if (!email) {
-        errorElement.innerHTML ="חסר אימייל להפעלה" ;
+        errorElement.innerHTML =getDivsMessages(["חסר אימייל להפעלה"]) ;
         imgElement.src = "https://udifili.com/images/qrerr.png";
         return;
       } 
