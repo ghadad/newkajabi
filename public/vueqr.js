@@ -91,7 +91,7 @@ document.addEventListener("DOMContentLoaded", function () {
            imgElement.src = "https://udifili.com/images/qrerr.png";
          }          
           else if(result.code =="NOT_FOUND") {
-            errorElement.innerHTML = "אימייל לא נמצא במערכת";
+            errorElement.innerHTML = getDivsMessages([ "אימייל לא נמצא במערכת"]);
             imgElement.src = "https://udifili.com/images/qrerr.png";
           } else {
           errorElement.innerHTML = result.message || "התרחשה שגיאה";
