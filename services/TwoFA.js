@@ -146,7 +146,7 @@ class TwoFA {
         email: email,
         status: 0,
         status_code:"REGISTER_ERROR"
-      }).catch(err>console.error("insert scans error",err));
+      }).catch(err=>console.error("insert scans error",err));
       return {
         httpCode: 403,
         success: false,
@@ -166,7 +166,7 @@ class TwoFA {
         email: email,
         status: 0,
         status_code:"NOT_FOUND"
-      }).catch(err>console.error("insert verifications error",err));
+      }).catch(err=>console.error("insert verifications error",err));
 
       return {
         httpCode: 403,
@@ -189,7 +189,7 @@ class TwoFA {
         email: email,
         status: 1,
         status_code:"SUCCESS"
-      }).catch(err>console.error("insert verifications error",err));
+      }).catch(err=>console.error("insert verifications error",err));
 
       return { success: true };
     } else {
@@ -198,7 +198,7 @@ class TwoFA {
         email: email,
         status: 0,
         status_code:"VERIFY_ERROR"
-      }).catch(err>console.error("insert verifications error",err));
+      }).catch(err =>console.error("insert verifications error",err));
 
 
       return {
@@ -235,7 +235,7 @@ class TwoFA {
           email: email,
           status: 0,
           status_code:"NOT_FOUND"
-        }).catch(err>console.error("insert scans error",err));
+        }).catch(err => console.error("insert scans error",err));
 
          return {success:false,code:"NOT_FOUND",message:'Email not found'};
       }
@@ -244,7 +244,7 @@ class TwoFA {
           email: email,
           status: 0,
           status_code:"ACTIVATION_ERROR - SITE INITIATOR"
-        }).catch(err>console.error("insert scans error",err));
+        }).catch(err => console.error("insert scans error",err));
 
         console.log("qrcode ACTIVATION_ERROR:",row);
         return {
@@ -261,7 +261,7 @@ class TwoFA {
           email: email,
           status: 0,
           status_code:"ALREADY_REGISTERED"
-        }).catch(err>console.error("insert scans error",err));
+        }).catch( err => console.error("insert scans error",err));
 
         return {
           httpCode: 403,
@@ -287,7 +287,7 @@ class TwoFA {
         email: email,
         status: 1,
         status_code:"SUCCESS"
-      }).catch(err>console.error("insert scans error",err));
+      }).catch( err => console.error("insert scans error",err));
 
       return { success: true, dataUrl: dataUrl };
     } catch (e) {
@@ -296,7 +296,7 @@ class TwoFA {
         email: email,
         status: 0,
         status_code:"QRCODE_ERROR"
-      }).catch(err>console.error("insert scans error",err));
+      }).catch(err => console.error("insert scans error",err));
 
       return {
         httpCode: 403,
