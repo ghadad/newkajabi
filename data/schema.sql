@@ -44,9 +44,6 @@ CREATE TABLE `accounts` (
 -- Dumping data for table `accounts`
 --
 
-INSERT INTO `accounts` (`id`, `email`, `password`, `secret`, `qrcode`, `scans`, `verified_once`, `activation_code`, `activated`, `created_at`) VALUES
-(4, 'udi_fili@yahoo.com', NULL, 'MFXWGQCEHBTDGNTUHJKES4C2GASDQUKK', 'otpauth://totp/Difuzia%202FA?secret=MFXWGQCEHBTDGNTUHJKES4C2GASDQUKK', 1, NULL, 'aa08819c-2aeb-44f3-a474-9f15ae7ac482', 1, '2023-02-25 13:05:28'),
-(6, 'ghadad@gmail.com', NULL, 'KVRHUJJ4LN4X2WBWGB6TA63JFI4EOZZF', 'otpauth://totp/Difuzia%202FA?secret=KVRHUJJ4LN4X2WBWGB6TA63JFI4EOZZF', 1, 'Y', NULL, 0, '2023-02-25 23:15:56');
 
 -- --------------------------------------------------------
 
